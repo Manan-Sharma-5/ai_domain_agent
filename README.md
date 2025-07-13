@@ -167,4 +167,4 @@ mypy src/
 
 ---
 
-**Made with ❤️ and AI** • [Report Bug](https://github.com/yourusername/ai-domain-agent/issues) • [Request Feature](https://github.com/yourusername/ai-domain-agent/issues)
+**Made with ❤️ by Manan** • [Report Bug](https://github.com/Manan-Sharma-5/ai_domain_agent/issues) • [Request Feature](https://github.com/Manan-Sharma-5/ai_domain_agent/issues)
