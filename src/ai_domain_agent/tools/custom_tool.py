@@ -1,7 +1,8 @@
 from crewai.tools import tool
 from crewai_tools import SerperDevTool
-import whois
+import requests
 import socket
+import whois
 
 @tool
 def keyword_research_tool(query: str) -> str:
@@ -26,38 +27,45 @@ def keyword_research_tool(query: str) -> str:
 @tool
 def domain_availability_checker(domain: str) -> str:
     """
-        Check if a domain name is available for registration or already taken.
-        This tool performs DNS resolution and WHOIS lookup to determine domain status. 
-        Use this when you need to verify domain availability for website projects, 
-        business planning, or domain investment decisions.
-        
+    Check if a domain name is available for registration or already taken.
+    This tool performs DNS resolution and WHOIS lookup to determine domain status.
+
     Args:
         domain (str): The domain name to check (e.g., "example.com", "mybusiness.ai")
-        
+
     Returns:
         str: A message indicating whether the domain is available or already registered.
     """
+    # --- Step 1: DomainsDB API ---
     try:
-        # First check if domain resolves
+        db_res = requests.get(
+            f"https://api.domainsdb.info/v1/domains/search?domain={domain}",
+            timeout=5
+        )
+        db_data = db_res.json()
+        if db_data.get("domains"):
+            create_date = db_data["domains"][0].get("create_date", "unknown")
+            return f"{domain} Already registered (via DomainsDB). Created on {create_date}. We will not be taking this domain."
+    except Exception as e:
+        # Continue to fallback methods
+        pass
+
+    # --- Step 2: DNS Resolution (socket) ---
+    dns_taken = False
+    try:
         socket.gethostbyname(domain)
-        domain_resolves = True
+        dns_taken = True
     except socket.gaierror:
-        domain_resolves = False
-    
+        dns_taken = False
+
+    # --- Step 3: WHOIS Lookup ---
     try:
-        whois_info = whois.whois(domain)
-        
-        # Check if any registration info exists
-        if (whois_info.creation_date or 
-            whois_info.registrar or 
-            whois_info.registrant or
-            domain_resolves):
-            return f"The domain '{domain}' is already registered."
-        else:
-            return f"The domain '{domain}' appears to be available."
-            
-    except:
-        if domain_resolves:
-            return f"The domain '{domain}' is registered (resolves but WHOIS failed)."
-        else:
-            return f"The domain '{domain}' appears to be available."
+        whois_data = whois.whois(domain)
+        if whois_data.domain_name or dns_taken:
+            return f"{domain} already Taken (via WHOIS or DNS). Do not use this domain."
+    except Exception:
+        if dns_taken:
+            return f"{domain} already Taken (resolves via DNS but WHOIS failed). Do not use this domain."
+
+    # --- Final Verdict ---
+    return f"{domain} Available"
