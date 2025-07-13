@@ -1,0 +1,140 @@
+research_task:
+  description: >
+    Conduct comprehensive research on the {topic} industry to identify high-value 
+    keywords, trending terms, competitor analysis, and brandable concepts. Focus on 
+    terms that would make strong domain names including:
+    - Core industry terminology and jargon
+    - Emerging trends and buzzwords
+    - Action words and verbs related to {topic}
+    - Descriptive adjectives that convey quality/innovation
+    - Competitor brand analysis for inspiration (not copying)
+    - Geographic or demographic-specific terms if relevant
+
+    Provide context for each keyword explaining why it's valuable for domain creation.
+
+  expected_output: >
+    A comprehensive keyword research report containing:
+    - 25-30 high-value keywords categorized by type (nouns, verbs, adjectives)
+    - Brief explanation of each keyword's relevance to {topic}
+    - Trending score (1-10) for each keyword
+    - Competitor insights and market positioning opportunities
+    - Recommended keyword combinations for domain generation
+
+    Format as a structured list with categories and explanations.
+
+  agent: researcher
+
+domain_creation_task:
+  description: >
+    Using the research keywords and insights, generate 20-25 unique, memorable, 
+    and brandable domain names. Apply advanced creative techniques including:
+    - Portmanteaus (blending two words)
+    - Compound words with creative spelling
+    - Invented terms that sound professional
+    - Metaphorical and symbolic names
+    - Short, punchy combinations (6-12 characters preferred)
+    - Names that are easy to pronounce and spell
+    - Avoid hyphens, numbers, and confusing spellings
+
+    Consider the target audience and ensure names convey the right brand personality.
+
+  expected_output: >
+    A curated list of 20-25 domain name suggestions formatted as:
+
+    **PRIMARY RECOMMENDATIONS (Top 8-10):**
+    1. domainname.com - Creative technique used and why it works
+    2. anotherdomain.com - Brand personality and target appeal
+
+    **SECONDARY OPTIONS (10-15 alternatives):**
+    3. backup-option.com - Reasoning and potential
+
+    Include variety in approaches: short brandable names, descriptive names, 
+    invented terms, and creative combinations. Explain the creative reasoning 
+    behind each suggestion.
+
+  agent: domain_name_creator
+  context:
+    - research_task
+
+availability_check_task:
+  description: >
+    Systematically check the availability of all generated domain names across 
+    multiple TLDs (.com, .net, .org, .io). For each domain:
+    - Verify registration status using custom tools
+    - If registered, remove it from the list, and it should not be included in the final recommendations
+    - Identify any obvious legal concerns
+    - For unavailable domains, suggest similar alternatives
+    - Flag domains that might be expensive premium domains
+    - Note any domains in auction or pending deletion
+
+    Prioritize .com domains but include viable alternatives for premium names.
+
+  expected_output: >
+    A detailed availability report containing:
+
+    **AVAILABLE DOMAINS (.com priority):**
+    - domainname.com ✅ Available - No trademark issues
+    - anotherdomain.com ✅ Available - Clean registration
+
+    **UNAVAILABLE DOMAINS:**
+    - takendomain.com ❌ Registered since 2015 - Alternative: takendomain.io ✅
+
+    **PREMIUM/AUCTION DOMAINS:**
+    - premiumname.com 💰 Available but premium priced (~$2,500)
+
+    **RECOMMENDED ALTERNATIVES:**
+    For any unavailable .com domains, provide 2-3 alternatives using:
+    - Different TLDs (.io, .co, .app)
+    - Slight variations that maintain brand integrity
+
+    Include final count of available domains and registration recommendations.
+
+  agent: domain_availability_checker
+  context:
+    - domain_creation_task
+
+domain_evaluation_task:
+  description: >
+    Evaluate all available domain names using a comprehensive scoring system 
+    based on brandability factors including:
+    - Memorability and ease of recall
+    - Pronunciation difficulty
+    - Typing ease and typo potential
+    - Brand potential and market appeal
+    - SEO friendliness
+    - Length and character composition
+    - Cultural sensitivity and global appeal
+    - Social media handle availability
+
+    Provide detailed scoring with reasoning and rank the domains from best to worst.
+
+  expected_output: >
+    A comprehensive evaluation report with:
+
+    **TOP TIER DOMAINS (Score 85-100):**
+    1. bestdomain.com - Score: 92/100
+       - Memorability: 9/10 (short, punchy)
+       - Pronunciation: 10/10 (clear, simple)
+       - Brand Potential: 9/10 (professional, scalable)
+       - SEO Value: 8/10 (keyword relevant)
+       - Overall Assessment: Excellent choice for premium branding
+
+    **GOOD DOMAINS (Score 70-84):**
+    2. gooddomain.com - Score: 78/100
+       - Detailed breakdown with pros/cons
+
+    **ACCEPTABLE DOMAINS (Score 60-69):**
+    3. okdomain.com - Score: 65/100
+       - Analysis and potential concerns
+
+    **FINAL RECOMMENDATIONS:**
+    - Top 3 domain choices with reasoning
+    - Budget considerations
+    - Long-term brand strategy advice
+    - Next steps for domain registration
+
+    Include overall market positioning strategy for the chosen domain.
+
+  agent: domain_evaluator
+  context:
+    - availability_check_task
